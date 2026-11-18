@@ -58,50 +58,50 @@ describe('parseImage', function() {
 
 
     it('case-05', function() {
-        const result = parseImage('kubevious/cli');
+        const result = parseImage('step-security/kubevious-cli-action');
         console.log(result);
         should(result).be.ok();
         should(result.isInvalid).be.not.ok();
         should(result.registry).be.equal('docker.io');
-        should(result.repository).be.equal('kubevious/cli');
-        should(result.namespace).be.equal('kubevious');
-        should(result.name).be.equal('cli');
+        should(result.repository).be.equal('step-security/kubevious-cli-action');
+        should(result.namespace).be.equal('step-security');
+        should(result.name).be.equal('kubevious-cli-action');
         should(result.tag).be.equal('latest');
     });
 
     it('case-06', function() {
-        const result = parseImage('kubevious/cli:v2');
+        const result = parseImage('step-security/kubevious-cli-action:v2');
         console.log(result);
         should(result).be.ok();
         should(result.isInvalid).be.not.ok();
         should(result.registry).be.equal('docker.io');
-        should(result.repository).be.equal('kubevious/cli');
-        should(result.namespace).be.equal('kubevious');
-        should(result.name).be.equal('cli');
+        should(result.repository).be.equal('step-security/kubevious-cli-action');
+        should(result.namespace).be.equal('step-security');
+        should(result.name).be.equal('kubevious-cli-action');
         should(result.tag).be.equal('v2');
     });
 
     it('case-07', function() {
-        const result = parseImage('quay.io/kubevious/cli');
+        const result = parseImage('quay.io/step-security/kubevious-cli-action');
         console.log(result);
         should(result).be.ok();
         should(result.isInvalid).be.not.ok();
         should(result.registry).be.equal('quay.io');
-        should(result.repository).be.equal('kubevious/cli');
-        should(result.namespace).be.equal('kubevious');
-        should(result.name).be.equal('cli');
+        should(result.repository).be.equal('step-security/kubevious-cli-action');
+        should(result.namespace).be.equal('step-security');
+        should(result.name).be.equal('kubevious-cli-action');
         should(result.tag).be.equal('latest');
     });
 
     it('case-08', function() {
-        const result = parseImage('quay.io/kubevious/cli:v3');
+        const result = parseImage('quay.io/step-security/kubevious-cli-action:v3');
         console.log(result);
         should(result).be.ok();
         should(result.isInvalid).be.not.ok();
         should(result.registry).be.equal('quay.io');
-        should(result.repository).be.equal('kubevious/cli');
-        should(result.namespace).be.equal('kubevious');
-        should(result.name).be.equal('cli');
+        should(result.repository).be.equal('step-security/kubevious-cli-action');
+        should(result.namespace).be.equal('step-security');
+        should(result.name).be.equal('kubevious-cli-action');
         should(result.tag).be.equal('v3');
     });
 

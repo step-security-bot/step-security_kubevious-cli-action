@@ -208,7 +208,6 @@ export class K8sManifestValidator
 
                         // Before we used to delete the node. This behavior causes
                         // a false possitive when an empty required string fails validation.
-                        // https://github.com/kubevious/cli/issues/20
                         // In future should try to set the value of undefined values as default value
                         // of the schema. That would also help with guard functionality with validation
                         // that depends on default values.

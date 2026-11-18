@@ -12,7 +12,7 @@ jobs:
       #   with:
       #     path: cli.git
       # - name: Checkout Mock Repo
-      #   uses: actions/checkout@v3        
+      #   uses: actions/checkout@v37       
       #   with:
       #     repository: kubevious/mock-data
       #     path: mock-data.git
@@ -21,7 +21,7 @@ jobs:
       #   run: './scripts/prepare-package.sh'
       # - name: 'Build'
       #   working-directory: ./cli.git
-      #   run: 'docker build -t kubevious/cli .'
+      #   run: 'docker build -t step-security/kubevious-cli-action .'
       - name: Validation of manifest files
         id: file-validation
         uses: ./

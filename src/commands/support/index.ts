@@ -17,7 +17,7 @@ export default function (program: Command)
                 print();
 
                 print(`${OTHER_ICONS.email.get()} support@kubevious.io`, 4);
-                print(`${OTHER_ICONS.bug.get()} https://github.com/kubevious/cli/issues`, 4);
+                print(`${OTHER_ICONS.bug.get()} https://github.com/step-security/kubevious-cli-action/issues`, 4);
                 print(`${OTHER_ICONS.slack.get()} https://kubevious.io/slack`, 4);
 
                 print();

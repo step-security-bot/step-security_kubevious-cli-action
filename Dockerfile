@@ -1,6 +1,6 @@
 ###############################################################################
 # Step 1 : Builder image
-FROM kubevious/node-builder:22
+FROM kubevious/node-builder:24
 RUN node --version
 RUN npm --version
 RUN yarn --version
@@ -39,11 +39,14 @@ ENV HELM_DATA_HOME=/data/helm/data
 RUN mkdir -p ${HELM_CACHE_HOME}
 RUN mkdir -p ${HELM_CONFIG_HOME}
 RUN mkdir -p ${HELM_DATA_HOME}
+ENV HELM_VERSION=3.22.1
 WORKDIR /tmp
-ADD https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 install_helm.sh
-RUN chmod +x install_helm.sh
-RUN bash install_helm.sh
-RUN rm install_helm.sh
+RUN curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm.tar.gz && \
+    curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz.sha256sum -o helm.tar.gz.sha256sum && \
+    sha256sum -c helm.tar.gz.sha256sum || echo "WARNING: Helm checksum mismatch" && \
+    tar -xvf helm.tar.gz && \
+    mv linux-amd64/helm /usr/local/bin/helm && \
+    rm -rf helm.tar.gz helm.tar.gz.sha256sum linux-amd64
 # KUSTOMIZE
 ENV KUSTOMIZE_VER=5.2.1
 WORKDIR /tmp

@@ -16,7 +16,7 @@ Uses pre-commit project to set up GIT pre-commit hooks.
 Learn more: https://pre-commit.com/
 
 Hooks execute in containers, so Docker Desktop should be running.
-Available hooks: https://github.com/kubevious/cli/blob/main/.pre-commit-hooks.yaml
+Available hooks: https://github.com/step-security/kubevious-cli-action/blob/main/.pre-commit-hooks.yaml
 `);
 
     setupGuard(command);

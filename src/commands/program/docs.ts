@@ -32,6 +32,6 @@ export const DESCRIPTION = `
                 WKOkkkkkkkkkkkkkOXWWKOkkkkkKW XOOOOOOOOOOOOOOOKW                
 
 ${SUMMARY}
-Find more information at: https://github.com/kubevious/cli
+Find more information at: https://github.com/step-security/kubevious-cli-action
 
 Usage: kubevious [options] [command]`;

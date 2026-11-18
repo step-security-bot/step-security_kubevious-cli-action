@@ -8,7 +8,7 @@ import { getLatestReleaseTag } from '../../utils/release';
 
 const logger = rootLogger.sublogger('InstallGitHookCmd');
 
-const HOOK_REPO = 'https://github.com/kubevious/cli';
+const HOOK_REPO = 'https://github.com/step-security/kubevious-cli-action';
 
 export async function command(origPath: string | undefined, options: InstallHookOptions) : Promise<InstallHookCommandData>
 {

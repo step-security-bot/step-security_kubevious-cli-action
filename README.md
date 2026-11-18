@@ -1,422 +1,81 @@
 [![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
 
-[![Release](https://img.shields.io/github/v/release/step-security/kubevious-cli-action?label=version&color=2ec4b6)](https://github.com/step-security/kubevious-cli-action/releases) [![Issues](https://img.shields.io/github/issues/step-security/kubevious-cli-action?color=red)](https://github.com/step-security/kubevious-cli-action/issues) [![Slack](https://img.shields.io/badge/chat-on%20slack-7b2cbf)](https://kubevious.io/slack) [![Twitter](https://img.shields.io/twitter/url?color=0096c7&logoColor=white&label=Follow&logo=twitter&style=flat&url=https%3A%2F%2Ftwitter.com%2Fkubevious)](https://twitter.com/kubevious) [![Codefresh build status]( https://g.codefresh.io/api/badges/pipeline/kubevious/OSS%2Fcli?type=cf-1)]( https://g.codefresh.io/public/accounts/kubevious/pipelines/new/6351c9e6063ec83876b195be) [![License](https://img.shields.io/badge/License-Apache%202.0-cb997e.svg)](https://opensource.org/licenses/Apache-2.0) ![](https://hit.yhype.me/github/profile?user_id=59004473)
+[![Release](https://img.shields.io/github/v/release/step-security/kubevious-cli-action?label=version&color=2ec4b6)](https://github.com/step-security/kubevious-cli-action/releases)
+[![License](https://img.shields.io/badge/License-Apache%202.0-cb997e.svg)](https://opensource.org/licenses/Apache-2.0)
 
+# Kubevious CLI Action
+**Kubevious CLI** is an app-centric assurance and validation tool for Kubernetes. It detects and prevents errors (*typos, misconfigurations, conflicts, inconsistencies*) and violations of best practices by validating changes before they reach the clusters.
 
-# Kubevious CLI
-**Kubevious CLI** is an app-centric assurance and validation tool for Kubernetes. It helps modern teams rapidly release cloud-native applications without disasters, costly outages, and compliance violations by validating changes before they even reach the clusters. Kubevious CLI detects and prevents errors(*typos, misconfigurations, conflicts, inconsistencies*) and violations of best practices. Our secret sauce is based on the ability to validate across multiple manifests, regardless if they are already in the K8s clusters or are yet to be applied. Kubevious CLI can be used as a standalone tool during the active development of YAML manifests and can also be easily integrated into GitOps processes and CI/CD pipelines to validate changes toward live Kubernetes clusters. Kubevious CLI was created based on the experience and the lessons learned from the [Kubevious Dashboard](https://github.com/kubevious/kubevious#kubevious-dashboard) project and uses the evolution of its rules framework.
-
-- [✨ Key Capabilities](#-key-capabilities)
-- [📥 Installation](#-installation)
-  - [👇 NPM Package](#-option-1-npm-package)
-  - [👇 Homebrew](#-option-2-homebrew)
-  - [👇 Precompiled Binaries](#-option-3-precompiled-binaries)
-  - [👇 In Docker Container](#-option-4-in-a-docker-container)
-  - [👇 CI/CD Integration](#-option-5-cicd-integration)
-- [🃏 Usage and Use Cases](#-usage-and-use-cases)
-  - [💂 Guard - Comprehensive Cross-Manifest Semantical Validation](#-guard---comprehensive-cross-manifest-semantical-validation)
-  - [✅ Lint - Validation of YAML syntax, K8s schema, and CRD/CR](#-lint---validation-of-yaml-syntax-k8s-schema-and-crdcr)
-  - [☸️ Validating Helm Charts](#%EF%B8%8F-validating-helm-charts)
-  - [☸️ Validating Kustomize Templates](#%EF%B8%8F-validating-kustomize-templates)
-  - [🩻 Troubleshoot Live Cluster](#-troubleshoot-live-cluster)
-  - [🕹 Input from a Variety of Sources](#-running-inside-a-container)
-  - [🪝 Git Pre-Commit Hook](#-git-pre-commit-hook)
-  - [📦 Running Inside a Container](#-running-inside-a-container)
-- [✍️ Writing Custom Rules](#%EF%B8%8F-writing-custom-rules)
-
-![Kubevious CLI Video](https://raw.githubusercontent.com/kubevious/media/master/cli/intro/demo_light.gif)
-
-## ✨ Key Capabilities
-
-### 🔘 Best Practices Validation
-
-- Community-driven [Rules Library](https://github.com/kubevious/rules-library).
-  - Validates K8s native manifests and popular projects uses such as CertManager, Traefik, Kong, Istio, etc.
-- Your own custom validation rules:
-  - from the file system
-  - from live Kubernetes cluster
-  - Scoped at the cluster level or within the namespace
-- Learn more about writing your own validation rules using [Kubik](https://github.com/kubevious/kubik).
-
-### 🔘 Manifest Validation
-- Validate YAML syntax
-- Validate manifest API correctness
-- Validate towards a custom K8s version, or live K8s cluster version
-
-### 🔘 CRDs and Custom Resources
-- Validate CRD definitions
-- Validate Custom Resources against CRDs in the file system
-- Validate Custom Resources against CRDs in the live K8s cluster
-
-### 🔘 Validation Sources
-
-Kubevous CLI validates manifests from a variety of sources:
-
-- files & directories
-- search patterns
-- web URLs
-- stdin pipe - used to validate package managers such as Helm, Kustomize, Ytt, etc.
-- native support with Helm & Kustomize
-- live manifests already present in the Kubernetes cluster
-- combination of all of the above
-
-
-## 📥 Installation
-
-### 👇 Option 1: (NPM Package)
-If you have Node.js v14 or higher:
-```sh
-$ npm install -g kubevious
-```
-
-```sh
-$ kubevious guard samples/
-```
-
-### 👇 Option 2: (Homebrew)
-```sh
-$ brew install kubevious
-```
-
-```sh
-$ kubevious guard samples/
-```
-
-### 👇 Option 3: (Precompiled Binaries)
-All-in-one executables for Linux, Alpine, Mac OS, and Windows, including x64 and arm64 architectures.
-Download from the [GitHub Releases](https://github.com/step-security/kubevious-cli-action/releases) or install using:
-
-```sh
-curl https://get.kubevious.io/cli.sh | bash
-```
-The script above would download the binary to */usr/local/bin/*
-
-
-Some environments have the */usr/local/bin/* path owned by *root*, so it may require running like this:
-```sh
-curl https://get.kubevious.io/cli.sh -o install-kubevious.sh && chmod +x install-kubevious.sh && sudo ./install-kubevious.sh && rm install-kubevious.sh
-```
-
-### 👇 Option 4: (In a Docker container)
-Run in a container:
-```sh
-$ docker run --rm step-security/kubevious-cli-action --help
-```
-
-Validate the entire manifests directory:
-```sh
-$ docker run --rm -v ${PWD}/samples:/src step-security/kubevious-cli-action guard /src
-```
-
-Validate manifests from pipe stream:
-```sh
-$ cat manifests.yaml | docker run --rm -i step-security/kubevious-cli-action guard --stream
-```
-### 👇 Option 5: (CI/CD Integration)
-Kubevious CLI Integrates with modern CI/CD platforms. Learn more [here](/docs/cicd).
-
-## 🃏 Usage and Use Cases
-Try it yourself:
-
-```sh
-$ git clone https://github.com/step-security/kubevious-cli-action.git kubevious-cli.git
-$ cd kubevious-cli.git/samples
-```
-
-### 💂 Guard - Comprehensive Cross-Manifest Semantical Validation
-
-The **guard** command performs **linting** of YAML syntax & API correctness and checks for violations of best-practices rules. 
-
-#### 🔘 Validate single K8s manifest
-
-Will complain about not being able to find the corresponding application matching the label selector:
-
-```sh
-$ kubevious guard pepsi/service.yaml
-
-📜 [ClusterRule] service-selector-ref
-   🌐 WEB: https://raw.githubusercontent.com/kubevious/rules-library/master/k8s/service/service-selector-ref.yaml
-   ❌ Rule failed
-   Violations:
-      ❌ Namespace: pepsi, API: v1, Kind: Service, Name: emailservice
-         📄 FILE: pepsi/service.yaml
-         🔴 Could not find Applications for Service
-```
-
-#### 🔘 Validate multiple K8s manifests
-
-Passing the Deployment along with the Service would help the validation pass:
-
-```sh
-$ kubevious guard pepsi/service.yaml pepsi/deployment.yaml
-
-📜 [ClusterRule] service-selector-ref
-   🌐 WEB: https://raw.githubusercontent.com/kubevious/rules-library/master/k8s/service/service-selector-ref.yaml
-   ✅ Rule passed
-   Passed:
-      ✅ Namespace: pepsi, API: v1, Kind: Service, Name: emailservice
-         📄 FILE: pepsi/service.yaml
-```
-
-#### 🔘 Validate manifests toward live K8s cluster
-
-Alternatively, if the dependent Deployment is already present in the K8s cluster, the Service can be validated against the live K8s cluster:
-
-```sh
-$ kubevious guard pepsi/service.yaml --live-k8s
-
-📜 [ClusterRule] service-selector-ref
-   🌐 WEB: https://raw.githubusercontent.com/kubevious/rules-library/master/k8s/service/service-selector-ref.yaml
-   ✅ Rule passed
-   Passed:
-      ✅ Namespace: pepsi, API: v1, Kind: Service, Name: emailservice
-         📄 FILE: pepsi/service.yaml
-```
-
-Although changing pod labels in *pepsi/deployment.yaml* would break the Service label selector, even though the correct Deployment is already in the K8s cluster:
+## Usage
 
 ```yaml
-spec:
-  selector:
-    matchLabels:
-      app: emailserviceX      # label is inconsistent with Service label selector
-  template:
-    metadata:
-      labels:
-        app: emailserviceX    # label is inconsistent with Service label selector
+- name: Kubevious Validation
+  uses: step-security/kubevious-cli-action@v1
+  with:
+    manifests: path/to/manifests
 ```
 
-```sh
-$ kubevious guard pepsi/service.yaml pepsi/deployment.yaml --live-k8s
+## Inputs
 
-📜 [ClusterRule] service-selector-ref
-   🌐 WEB: https://raw.githubusercontent.com/kubevious/rules-library/master/k8s/service/service-selector-ref.yaml
-   ❌ Rule failed
-   Violations:
-      ❌ Namespace: pepsi, API: v1, Kind: Service, Name: emailservice
-         📄 FILE: pepsi/service.yaml
-         🔴 Could not find Applications for Service
+| Input                  | Description                                              | Default  |
+| ---------------------- | -------------------------------------------------------- | -------- |
+| `manifests`            | Path to manifest files, directories, or URLs to validate | `''`     |
+| `helm_repo_url`        | Helm repository URL                                      | `''`     |
+| `helm_repo_name`       | Name alias for Helm repository URL                       | `''`     |
+| `helm_chart`           | Helm chart name                                          | `''`     |
+| `helm_namespace`       | Helm release namespace                                   | `''`     |
+| `helm_include_crds`    | Include CRDs in Helm release                             | `false`  |
+| `helm_override`        | Helm overrides                                           | `''`     |
+| `crds`                 | Path to CRDs to include in validation                    | `''`     |
+| `mocks`                | Path to mocked manifests to include in validation        | `''`     |
+| `k8s_version`          | Kubernetes version to validate against                   | `''`     |
+| `live_k8s`             | Validate against live Kubernetes cluster                 | `false`  |
+| `ignore_unknown`       | Ignore unknown Kubernetes resources                      | `false`  |
+| `ignore_non_k8s`       | Ignore non-Kubernetes YAML files                         | `false`  |
+| `skip_rules`           | Skip rules by name                                       | `''`     |
+| `only_rules`           | Run only specified rules                                 | `''`     |
+| `skip_rule_categories` | Skip rules by category                                   | `''`     |
+| `only_rule_categories` | Run only specified rule categories                       | `''`     |
+| `detailed_output`      | Output in detail                                         | `false`  |
+| `json_output`          | Output in JSON format                                    | `false`  |
+| `other_args`           | Additional arguments                                     | `''`     |
+
+## Examples
+
+### Validate manifest files
+```yaml
+- uses: step-security/kubevious-cli-action@v1
+  with:
+    manifests: path/to/manifests
 ```
 
-### ✅ Lint - Validation of YAML syntax, K8s schema, and CRD/CR
-
-The **guard** command performs **linting** underneath, so the guard users don't need to run lint separately.
-
-#### 🔘 Checking for API correctness:
-
-```sh
-$ kubevious lint invalid-service-1.yaml
-ℹ️  Linting against Kubernetes Version: 1.25.2
-
-❌ 📄 FILE: invalid-service-1.yaml
-   ❌ API: v1, Kind: Service, Name: db
-      ❌ Required property "port" missing under "/spec/ports/0"
+### Validate a Helm chart
+```yaml
+- uses: step-security/kubevious-cli-action@v1
+  with:
+    helm_repo_url: https://helm.traefik.io/traefik
+    helm_repo_name: traefik
+    helm_chart: traefik
+    helm_namespace: traefik
+    helm_include_crds: true
 ```
 
-#### 🔘 Linting against particular K8s version
-```sh
-$ kubevious lint hpa.yaml --k8s-version 1.21
-ℹ️  Linting against Kubernetes Version: 1.21.14
-
-❌ 📄 FILE: hpa.yaml
-   ❌ Namespace: ordering, API: autoscaling/v2, Kind: HorizontalPodAutoscaler, Name: orderservice
-      🔴 Unknown API Resource. apiVersion: autoscaling/v2, kind: HorizontalPodAutoscaler.
+### Validate Kustomize output
+```yaml
+- name: Kustomize build
+  run: kustomize build path/to/overlay > manifests.yaml
+- uses: step-security/kubevious-cli-action@v1
+  with:
+    manifests: manifests.yaml
 ```
 
-```sh
-$ kubevious lint hpa.yaml --k8s-version 1.23
-ℹ️  Linting against Kubernetes Version: 1.23.12
-
-✅ 📄 FILE: hpa.yaml
-   ✅ Namespace: ordering, API: autoscaling/v2, Kind: HorizontalPodAutoscaler, Name: orderservice
+### Validate against a specific K8s version
+```yaml
+- uses: step-security/kubevious-cli-action@v1
+  with:
+    manifests: path/to/manifests
+    k8s_version: '1.30'
 ```
-
-#### 🔘 Ignoring unknown resources
-
-```sh
-$ kubevious lint istio-gateway.yaml --ignore-unknown
-
-⚠️  📄 FILE: istio-gateway.yaml
-   ⚠️  Namespace: hipster, API: networking.istio.io/v1alpha3, Kind: Gateway, Name: frontend-gateway
-      ⚠️  Unknown API Resource. apiVersion: networking.istio.io/v1alpha3, kind: Gateway.
-
-✅ Lint Succeeded.
-```
-
-#### 🔘 Validate Against Live K8s Cluster with CRDs
-```sh
-$ kubevious lint istio-gateway.yaml --live-k8s
-ℹ️  Linting against Kubernetes Version: v1.24.0
-
-✅ 📄 FILE: data/istio-gateway.yaml
-   ✅ Namespace: hipster, API: networking.istio.io/v1alpha3, Kind: Gateway, Name: frontend-gateway
-```
-
-#### 🔘 Validate Custom Resource and Corresponding CRD
-```sh
-$ kubevious lint cr-good.yaml crd.yaml
-ℹ️  Linting against Kubernetes Version: 1.25.2
-
-✅ 📄 FILE: cr-good.yaml
-   ✅ Namespace: coke, API: example.com/v1alpha1, Kind: MyPlatform, Name: test-dotnet-app
-
-✅ 📄 FILE: crd.yaml
-   ✅ API: apiextensions.k8s.io/v1, Kind: CustomResourceDefinition, Name: myplatforms.example.com
-```
-
-### ☸️ Validating Helm Charts
-Kubevious CLI executes the Helm template whenever a Helm chart is discovered.
-```sh
-$ kubevious guard path-to-helm-chart-directory
-```
-
-It is also possible to pass remote Helm repos to validate
-```sh
-$ helm repo add traefik https://helm.traefik.io/traefik
-$ kubevious guard @helm@traefik/traefik
-```
-
-Use **values** to specify Helm overrides file and inline values
-```sh
-$ kubevious guard @helm@traefik/traefik@values=overrides/prod.yaml@set=persistence.enabled=true
-```
-
-Supported Helm parameters:
-| Key          | Description                          |
-| ------------ | ------------------------------------ |
-| values       | Path to Helm overrides path          |
-| namespace    | The namespace                        |
-| release-name | The release name                     |
-| crds         | Possible values: "include" or "skip" |
-| set          | Inline value overrides "key=value"   |
-
-### ☸️ Validating Kustomize Templates
-
-Kubevious CLI executes Kustomize build as soon as it discovers kustomization.yaml files. Every files within that directory will be ignored. 
-
-```sh
-$ kubevious guard path-to-kustomize-directory-or-file
-```
-
-### 🩻 Troubleshoot Live Cluster
-
-The tool can be used to troubleshoot existing clusters and manifests:
-```sh
-kubevious guard --live-k8s --include-remote-targets --namespace default
-```
-
-### 🕹 Input from a Variety of Sources
-
-#### 🔘 Multiple Directories
-
-```sh
-$ kubevious guard sveltos/ pepsi/
-```
-
-#### 🔘 Stream Input
-
-Primary usage is to validate template outputs such as Helm Charts, Kuztomize, Carvel, etc.
-
-```sh
-$ ytt -f my-app/ | kubevious guard --stream
-
-❌ ♒ STREAM: stream
-   ❌ Namespace: default, API: traefik.containo.us/v1alpha1, Kind: IngressRoute, Name: release-name-traefik-dashboard
-      🔴 Unknown API Resource. apiVersion: traefik.containo.us/v1alpha1, kind: IngressRoute.
-```
-
-Also can pass additional manifests, such as CRDs, Rules, etc., for validation along with the steam input.
-
-```sh
-$ ytt -f my-app/ | kubevious guard --stream https://raw.githubusercontent.com/traefik/traefik-helm-chart/master/traefik/crds/ingressroute.yaml
-
-✅ Guard Succeeded.
-```
-
-### 📦 Running Inside a Container
-
-#### 🔘 Validate the Entire Directory
-
-Mount a local directory to */src* in the container. The rest of the arguments are the same.
-
-```sh
-$ docker run --rm -v ${PWD}/pepsi:/src step-security/kubevious-cli-action guard /src
-❌ Guard Failed
-```
-
-#### 🔘 Validate Files
-
-The directory must be mounted to */src* in the container to validate individual files. Can pass file names in the command line arguments.
-
-```sh
-$ docker run --rm -v ${PWD}/pepsi:/src step-security/kubevious-cli-action guard /src/service.yaml /src/deployment.yaml
-✅ Guard Succeeded.
-```
-
-#### 🔘 Stream Input
-
-Don't forget the **-i** argument.
-
-```sh
-$ helm template traefik/traefik | docker run --rm -i step-security/kubevious-cli-action guard --stream
-
-❌ ♒ STREAM: stream
-   ❌ Namespace: default, API: traefik.containo.us/v1alpha1, Kind: IngressRoute, Name: release-name-traefik-dashboard
-      🔴 Unknown API Resource. apiVersion: traefik.containo.us/v1alpha1, kind: IngressRoute.
-```
-
-Passing CRDs as input would fix the issue:
-
-```sh
-$ helm template traefik/traefik | docker run --rm -i step-security/kubevious-cli-action guard --stream https://raw.githubusercontent.com/traefik/traefik-helm-chart/master/traefik/crds/ingressroute.yaml
-
-✅ Guard Succeeded.
-```
-
-### 🪝 Git Pre-Commit Hook
-
-You can get **guard** and **lint** commands to execute whenever changes to the GitOps repo are made. Kubevious uses the [pre-commit](https://pre-commit.com/) project to set up pre-commit hooks. For convenience, there are commands to install hooks:
-
-```sh
-$ kubevious install-git-hook guard
-   ℹ️  Repository: /Users/django/example.git
-   ℹ️  PreCommit Config File: /Users/django/example.git/.pre-commit-config.yaml
-   ℹ️  Hook Repo: https://github.com/step-security/kubevious-cli-action
-   ℹ️  Hook ID: kubevious-guard
-
-✅ Install Git Hook Succeeded.
-   Now you can run: 
-     $> cd /Users/django/example.git
-     $> git add .pre-commit-config.yaml
-     $> pre-commit autoupdate
-```
-
-or
-
-```sh
-$ kubevious install-git-hook lint
-```
-
-## ✍️ Writing Custom Rules
-Kubevious rules are expressed in a domain-specific language called [Kubik](https://github.com/kubevious/kubik). A great way to start writing your own rules is to learn from the [community-driven rules library](https://github.com/kubevious/rules-library).
-
-## ☎️ Support
-Need help writing custom rules or policies? Need help with integration into your CI/CD platforms? Or urgently need a new feature or bug fix? Reach out to us at [support@kubevious.io](mailto:support@kubevious.io) 
-
-## 💬 Slack
-Join the [Kubevious Slack workspace](https://kubevious.io/slack) to chat with Kubevious developers and users. This is a good place to learn about Kubevious, ask questions, and share your experiences.
-
-## 🏗️ Contributing
-We invite your participation through issues and pull requests! You can peruse the [contributing guidelines](https://github.com/kubevious/kubevious/blob/master/CONTRIBUTING.md).
-
-## 🏛️ Governance
-The Kubevious project is created by [AUTHORS](https://github.com/kubevious/kubevious/blob/master/AUTHORS.md). Governance policy is yet to be defined.
-
-## 🚀 Roadmap
-Kubevious maintains a public [roadmap](https://github.com/kubevious/kubevious/blob/master/ROADMAP.md), which provides priorities and future capabilities we are planning on adding to Kubevious.
-
-## 🔭 Kubevious Project
-Learn more about the Kubevious projects in the root repository: https://github.com/kubevious/kubevious
 
 ## 📜 License
-Kubevious CLI is an open-source project licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). 
+Kubevious CLI Action is an open-source project licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
