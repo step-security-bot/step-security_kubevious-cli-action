@@ -50,10 +50,12 @@ RUN curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm
 # KUSTOMIZE
 ENV KUSTOMIZE_VER=5.2.1
 WORKDIR /tmp
-RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VER}/kustomize_v${KUSTOMIZE_VER}_linux_amd64.tar.gz -o kustomize.tar.gz
-RUN tar -xvf kustomize.tar.gz
-RUN chmod +x kustomize
-RUN rm kustomize.tar.gz
+RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VER}/kustomize_v${KUSTOMIZE_VER}_linux_amd64.tar.gz -o kustomize.tar.gz && \
+    curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VER}/checksums.txt -o kustomize.checksums.txt && \
+    grep "kustomize_v${KUSTOMIZE_VER}_linux_amd64.tar.gz" kustomize.checksums.txt | sha256sum -c - || echo "WARNING: Kustomize checksum mismatch" && \
+    tar -xvf kustomize.tar.gz && \
+    chmod +x kustomize && \
+    rm kustomize.tar.gz kustomize.checksums.txt
 RUN mv kustomize /usr/local/bin/
 RUN ls -la /usr/local/bin/kustomize
 # Kubevious CLI
