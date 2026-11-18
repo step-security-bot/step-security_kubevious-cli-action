@@ -1,0 +1,45 @@
+apiVersion: kubevious.io/v1alpha1
+kind: ClusterRule
+metadata:
+  name: cert-manager.certificate-check
+spec:
+  values:
+    domain: example.com
+  target: |
+    ApiVersion('cert-manager.io/v1')
+    .Kind('Certificate')
+  rule: |
+    const issuerRef = config.spec?.issuerRef;
+    if (!issuerRef) {
+      error('issuerRef is not set');
+      return;
+    }
+    const issuerRefKind = issuerRef.kind ?? 'Issuer';
+    const issuerRefName = config.spec?.issuerRef?.name;
+    if (!issuerRefName) {
+      error('issuerRef.name is not set.');
+      return;
+    }
+    const issuer = ApiVersion('cert-manager.io/v1')
+                    .Kind(issuerRefKind)
+                    .name(issuerRefName)
+                    .isClusterScope(issuerRefKind.startsWith('Cluster'))
+                    .single();
+    if (!issuer) {
+      error('Could not find the Certificate Issuer');
+    } else {
+      const email = issuer.config.spec?.acme?.email ?? "";
+      if (!email.endsWith(values.domain)) {
+        error(`Using not approved email: ${email}. Should be from ${values.domain} domain.`);
+      }
+    }
+  application:
+    useApplicator: true
+    # onlySelectedNamespaces: true
+  #   namespaces:
+  #     - name: kubevious
+  #       values: 
+  #         domain: kubevious.io
+  #     - name: pepsi
+  #     - name: foo
+  # disabled: true

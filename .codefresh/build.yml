@@ -1,0 +1,274 @@
+version: "1.0"
+
+stages:
+  - "clone"
+  - "build"
+  - "package"
+  - "test"
+  - "multiplatform"
+
+steps:
+
+  init:
+    title: Init
+    stage: clone
+    image: codefresh/cli
+    shell: bash
+    commands:
+      - cf_export GITHUB_TOKEN=$(codefresh get context github --decrypt -o yaml | yq -y .spec.data.auth.password)
+      - export PRODUCT_NAME=${{CF_REPO_NAME}}
+      - cf_export PRODUCT_NAME=${PRODUCT_NAME}
+      - cf_export MAIN_REPO_PATH=/codefresh/volume/repo.git
+      - export MOCK_DATA_REPO_NAME=mock-data
+      - cf_export MOCK_DATA_REPO_NAME=${MOCK_DATA_REPO_NAME}
+      - cf_export MOCK_DATA_REPO_PATH=/codefresh/volume/${MOCK_DATA_REPO_NAME}.git
+      - export DEMOS_REPO_NAME=demos
+      - cf_export DEMOS_REPO_NAME=${DEMOS_REPO_NAME}
+      - cf_export DEMOS_REPO_PATH=/codefresh/volume/${DEMOS_REPO_NAME}.git
+      - cf_export SAMPLES_PATH=/codefresh/volume/samples
+      - export IMAGE_NAME=kubevious/${PRODUCT_NAME}
+      - cf_export IMAGE_NAME=${IMAGE_NAME}
+      - 'echo "Repo: ${{CF_REPO_NAME}}"'
+      - 'echo "Branch: ${{CF_BRANCH}}"'
+      - 'echo "Revision: ${{CF_REVISION}}"'
+      - 'echo "Author: ${{CF_COMMIT_AUTHOR}}"'
+      - 'echo "Message: ${{CF_COMMIT_MESSAGE}}"'
+      - 'echo "Image Name: ${IMAGE_NAME}"'
+      
+  clone:
+    title: Clone Repo
+    stage: clone
+    image: 'alpine/git:latest'
+    working_directory: "/codefresh/volume"
+    commands:
+      - pwd
+      - ls -la
+      - rm -rf ${{MAIN_REPO_PATH}}
+      - 'git clone https://${{CF_REPO_OWNER}}:${{GITHUB_TOKEN}}@github.com/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}.git ${{MAIN_REPO_PATH}}'
+      - ls -la
+      - cd ${{MAIN_REPO_PATH}}
+      - git reset --hard ${{CF_REVISION}}
+      - ls -la
+
+  clone_mock_data:
+    title: Clone Mock Data Repo
+    stage: clone
+    image: 'alpine/git:latest'
+    working_directory: "/codefresh/volume"
+    commands:
+      - pwd
+      - ls -la
+      - rm -rf ${{MOCK_DATA_REPO_PATH}}
+      - 'git clone https://${{CF_REPO_OWNER}}:${{GITHUB_TOKEN}}@github.com/${{CF_REPO_OWNER}}/${{MOCK_DATA_REPO_NAME}}.git ${{MOCK_DATA_REPO_PATH}}'
+      - ls -la
+      - cd ${{MOCK_DATA_REPO_PATH}}
+      - ls -la
+
+  clone_demos:
+    title: Clone Demos Repo
+    stage: clone
+    image: 'alpine/git:latest'
+    working_directory: "/codefresh/volume"
+    commands:
+      - pwd
+      - ls -la
+      - rm -rf ${{DEMOS_REPO_PATH}}
+      - 'git clone https://${{CF_REPO_OWNER}}:${{GITHUB_TOKEN}}@github.com/${{CF_REPO_OWNER}}/${{DEMOS_REPO_NAME}}.git ${{DEMOS_REPO_PATH}}'
+      - ls -la
+      - cd ${{DEMOS_REPO_PATH}}
+      - ls -la
+
+  prepare:
+    title: Prepare Dependencies
+    stage: build
+    image: 'kubevious/node-builder:22'
+    working_directory: "${{MAIN_REPO_PATH}}"
+    commands:
+      - yarn install --frozen-lockfile
+
+  compile:
+    title: Compile
+    stage: build
+    image: 'kubevious/node-builder:22'
+    working_directory: "${{MAIN_REPO_PATH}}"
+    commands:
+      - ./scripts/prepare-package.sh
+      - npm run build
+
+  run_unit_test:
+    title: Run Unit Tests
+    stage: build
+    image: 'kubevious/node-builder:22'
+    working_directory: "${{MAIN_REPO_PATH}}"
+    commands:
+      - pwd
+      - ls -la
+      - npm test
+
+  package_npm:
+    title: Package NPM
+    stage: package
+    image: 'kubevious/node-builder:22'
+    working_directory: "${{MAIN_REPO_PATH}}"
+    commands:
+      - npm pack
+      - ls -la
+
+  npm_package_sample_tests:
+    title: NPM Package Sample Tests
+    stage: package
+    image: 'kubevious/node-with-tools:v22'
+    working_directory: "${{DEMOS_REPO_PATH}}/guard"
+    commands:
+      - source ${{MAIN_REPO_PATH}}/version.sh
+      - npm install -g ${{MAIN_REPO_PATH}}/kubevious-${PRODUCT_VERSION}.tgz
+      - kubevious --version
+      - echo "Linting Hipster Shop..."
+      - kubevious lint 01-hipster-shop/hipster-chart/templates/manifests.yaml
+      - echo "Linting Hipster Shop From Stream..."
+      - cat 01-hipster-shop/hipster-chart/templates/manifests.yaml | kubevious lint --stream 
+      - echo "Guarding Voter App..."
+      - kubevious guard 02-voter-app/voter-chart/templates
+      - echo "Guarding Hipster Shop Helm Chart..."
+      - kubevious guard 01-hipster-shop/hipster-chart
+
+  # build_all_in_one_binaries:
+  #   title: Build all in one binaries
+  #   stage: package
+  #   image: 'kubevious/node-executable-builder:v18'
+  #   working_directory: "${{MAIN_REPO_PATH}}"
+  #   commands:
+  #     - pkg . --debug --no-bytecode
+  #     - ls -la
+  #     - ls -la binary/
+
+  docker_build:
+    title: Building Kubevious CLI Image
+    stage: package
+    type: build
+    image_name: "${{IMAGE_NAME}}"
+    working_directory: "${{MAIN_REPO_PATH}}"
+    disable_push: true
+
+  docker_image_sample_tests:
+    title: Docker Image Sample Tests
+    stage: package
+    image: "${{docker_build}}"
+    working_directory: "${{DEMOS_REPO_PATH}}/guard"
+    commands:    
+      - kubevious --version
+      - echo "Linting Hipster Shop..."
+      - kubevious lint 01-hipster-shop/hipster-chart/templates/manifests.yaml
+      - echo "Linting Hipster Shop From Stream..."
+      - cat 01-hipster-shop/hipster-chart/templates/manifests.yaml | kubevious lint --stream 
+      - echo "Guarding Voter App..."
+      - kubevious guard 02-voter-app/voter-chart/templates
+      - echo "Guarding Hipster Shop Helm Chart..."
+      - kubevious guard 01-hipster-shop/hipster-chart
+    
+
+  # TESTS
+  parallel_tests:
+    type: parallel
+    stage: test
+    steps:
+
+      validate_traefik_chart:
+        title: Validate Traefik Chart
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{SAMPLES_PATH}}
+        commands:    
+          - helm version
+          - helm repo add traefik https://traefik.github.io/charts
+          - helm template traefik/traefik --include-crds > traefik.yaml
+          - kubevious lint traefik.yaml
+          - kubevious guard traefik.yaml
+          - kubevious guard @helm@traefik/traefik@crds=include
+
+      validate_prometheus_chart:
+        title: Validate Prometheus Chart
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{SAMPLES_PATH}}
+        commands:    
+          - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          - kubevious lint @helm@prometheus-community/prometheus
+          - kubevious guard @helm@prometheus-community/prometheus
+
+      validate_grafana_chart:
+        title: Validate Prometheus Chart
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{SAMPLES_PATH}}
+        commands:    
+          - helm repo add grafana https://grafana.github.io/helm-charts
+          - helm template grafana/grafana --namespace grafana --set persistence.enabled=true > grafana.yaml
+          - kubevious lint grafana.yaml
+          - kubevious guard grafana.yaml
+
+      validate_kubeflow:
+        title: Validate Kubeflow
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{SAMPLES_PATH}}
+        commands:
+          - ls -la
+          - rm -rf kubeflow-pipelines.git
+          - git clone https://github.com/kubeflow/pipelines.git kubeflow-pipelines.git
+          - kubevious guard kubeflow-pipelines.git/manifests/kustomize/cluster-scoped-resources kubeflow-pipelines.git/manifests/kustomize/env/platform-agnostic ${{DEMOS_REPO_PATH}}/mocks/kubeflow/webhook-server-tls.yaml
+          
+      validate_istio:
+        title: Validate Istio Chart
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{DEMOS_REPO_PATH}}/guard/10-istio-bookinfo
+        commands:
+          - ls -la
+          - echo "Validating Istio Classic..."
+          - kubevious guard bookinfo.yaml istio-classic/bookinfo-gateway.yaml istio-classic/destination-rule-all.yaml https://raw.githubusercontent.com/istio/istio/refs/heads/master/manifests/charts/base/files/crd-all.gen.yaml
+          - echo "Validating Istio Gateway API..."
+          - kubevious guard bookinfo.yaml gateway-api/mock-gateway-class.yaml gateway-api/bookinfo-gateway.yaml gateway-api/bookinfo-versions.yaml ${{DEMOS_REPO_PATH}}/mocks/istio/secret-gateway-api-admission.yaml ${{DEMOS_REPO_PATH}}/crds/gateway-api/standard.yaml
+
+      validate_hipster_simple:
+        title: Validate Hipster Chart
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{DEMOS_REPO_PATH}}/guard/01-hipster-shop
+        commands:
+          - kubevious guard hipster-chart
+
+      validate_hipster_network_policies:
+        title: Validate Hipster Network Policies
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{DEMOS_REPO_PATH}}/guard/01-hipster-shop
+        commands:
+          - kubevious guard hipster-chart network-policies-chart
+
+      validate_hipster_network-policies:
+        title: Validate Hipster Istio
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{DEMOS_REPO_PATH}}/guard/01-hipster-shop
+        commands:
+          - kubevious guard hipster-chart istio-chart https://raw.githubusercontent.com/istio/istio/refs/heads/master/manifests/charts/base/files/crd-all.gen.yaml
+
+      validate_voter:
+        title: Validate Voter App
+        stage: test
+        image: "${{docker_build}}"
+        working_directory: ${{DEMOS_REPO_PATH}}/guard/02-voter-app
+        commands:
+          - kubevious guard voter-chart
+
+
+  docker_build_multi_platform:
+    title: Building Multiplatform Kubevious CLI Image
+    stage: multiplatform
+    type: build
+    image_name: "${{IMAGE_NAME}}"
+    platform: linux/amd64,linux/arm64
+    buildx: true
+    working_directory: "${{MAIN_REPO_PATH}}"
+    disable_push: true  

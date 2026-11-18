@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db
+  name: db-6
+spec:
+  type: ClusterIP
+  ports: []
+  selector:
+    app: db
