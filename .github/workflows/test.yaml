@@ -1,0 +1,39 @@
+name: Guard Test
+
+on: [push]
+
+jobs:
+  kubevious_validation:
+    runs-on: ubuntu-latest
+    name: Kubevious CLI Validation Run
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      #   with:
+      #     path: cli.git
+      # - name: Checkout Mock Repo
+      #   uses: actions/checkout@v37       
+      #   with:
+      #     repository: kubevious/mock-data
+      #     path: mock-data.git
+      # - name: 'Prepare Packages'
+      #   working-directory: ./cli.git
+      #   run: './scripts/prepare-package.sh'
+      # - name: 'Build'
+      #   working-directory: ./cli.git
+      #   run: 'docker build -t step-security/kubevious-cli-action .'
+      - name: Validation of manifest files
+        id: file-validation
+        uses: ./
+        with:
+          manifests: samples/argo-rollout
+          crds: https://raw.githubusercontent.com/kubevious/demos/main/crds/argo-rollouts/crds.yaml        
+      - name: Validation of Helm Charts
+        id: chart-validation
+        uses: ./
+        with:
+          helm_repo_url: https://helm.kubevious.io
+          helm_repo_name: kubevious
+          helm_chart: kubevious
+          helm_namespace: kubevious
+          helm_include_crds: true

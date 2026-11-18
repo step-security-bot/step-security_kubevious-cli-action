@@ -1,0 +1,63 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: rules.kubevious.io
+spec:
+  group: kubevious.io
+  scope: Namespaced
+  names:
+    plural: rules
+    singular: rule
+    kind: Rule
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                summary:
+                  type: string
+                description:
+                  type: string
+                target:
+                  type: string
+                globalCache:
+                  type: string
+                cache:
+                  type: string
+                rule:
+                  type: string
+                values:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                disabled:
+                  type: boolean
+                dependencies:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      minVersion:
+                        type: string
+                      maxVersion:
+                        type: string
+                      range:
+                        type: string
+                    required:
+                      - name
+                categories:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - target
+                - rule
+          required:
+            - spec
