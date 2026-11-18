@@ -12,13 +12,13 @@ name: default
 steps:
 
 - name: kubevious-file-check
-  image: kubevious/cli
+  image: step-security/kubevious-cli-action
   settings:
     manifests: samples/argo-rollout
     crds: https://raw.githubusercontent.com/kubevious/demos/main/crds/argo-rollouts/crds.yaml
     
 - name: kubevious-helm-check
-  image: kubevious/cli
+  image: step-security/kubevious-cli-action
   settings:
     helm_repo_url: https://helm.kubevious.io
     helm_repo_name: kubevious

@@ -27,9 +27,9 @@ RUN mv kubevious-$(node -p -e "require('./package.json').version").tgz kubevious
 
 ###############################################################################
 # Step 2 : Runner image
-FROM node:18-alpine
+FROM node:24-alpine
 RUN apk update && apk upgrade && \
-    apk --no-cache add ca-certificates bash openssl git curl wget 
+    apk --no-cache add ca-certificates bash openssl git curl wget jq
 # DATA
 RUN mkdir -p /data
 # HELM 

@@ -2,7 +2,7 @@
 
 The workflow example below validates a directory of manifests and a Helm chart.
 
-See how it runs here: https://github.com/kubevious/cli/actions/workflows/test.yaml
+See how it runs here: https://github.com/step-security/kubevious-cli-action/actions/workflows/test.yaml
 
 ```yaml
 on: [push]
@@ -14,18 +14,18 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v3'
+        uses: actions/checkout@v4
         
       - name: Validation of manifest files
         id: files-validation
-        uses: kubevious/cli@main
+        uses: step-security/kubevious-cli-action@v1
         with:
           manifests: samples/argo-rollout
           crds: https://raw.githubusercontent.com/kubevious/demos/main/crds/argo-rollouts/crds.yaml        
           
       - name: Validation of Helm Charts
         id: chart-validation
-        uses: kubevious/cli@main
+        uses: step-security/kubevious-cli-action@v1
         with:
           helm_repo_url: https://helm.kubevious.io
           helm_repo_name: kubevious

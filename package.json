@@ -32,15 +32,15 @@
     "lint": "eslint",
     "start": "tsc && node dist/index.js"
   },
-  "author": "Ruben Hakopian <ruben.hakopian@gmail.com>",
+  "author": "step-security",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/kubevious/cli/issues"
+    "url": "https://github.com/step-security/kubevious-cli-action/issues"
   },
-  "homepage": "https://kubevious.io",
+  "homepage": "https://github.com/step-security/kubevious-cli-action#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kubevious/cli"
+    "url": "git+https://github.com/step-security/kubevious-cli-action.git"
   },
   "dependencies": {
     "@kubevious/entity-meta": "^1.0.81",
@@ -60,9 +60,9 @@
     "openapi-schema-validator": "^12.1.0",
     "ora": "5.4.1",
     "semver": "^7.5.0",
-    "the-lodash": "^2.1.2",
-    "the-logger": "^2.1.1",
-    "the-promise": "^2.1.3",
+    "the-lodash": "^3.0.3",
+    "the-logger": "^3.0.2",
+    "the-promise": "^3.0.1",
     "tmp": "^0.2.1",
     "uuid-parse": "^1.1.0",
     "yaml": "^2.2.2"
@@ -84,9 +84,9 @@
     "typescript": "^5.0.4"
   },
   "resolutions": {
-    "the-lodash": "^2.1.2",
-    "the-logger": "^2.1.1",
-    "the-promise": "^2.1.3",
+    "the-lodash": "^3.0.3",
+    "the-logger": "^3.0.2",
+    "the-promise": "^3.0.1",
     "k8s-super-client": "^2.1.5",
     "@kubevious/state-registry": "^1.0.19",
     "@kubevious/kubik": "^1.0.33",

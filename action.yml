@@ -1,6 +1,6 @@
 name: Kubevious CLI
 description: Use the Kubevious CLI in a github action
-author: kubevious
+author: 'step-security'
 inputs:
   helm_repo_url:
     description: Helm repository URL
@@ -84,8 +84,8 @@ inputs:
     default: ''
 runs:
   using: docker
-  image: docker://kubevious/cli:1.0.64
-  # image: Dockerfile
+  # image: docker://kubevious/cli:1.0.64
+  image: Dockerfile
 branding:
   icon: 'shield'
   color: 'green'

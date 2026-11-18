@@ -8,10 +8,10 @@ jobs:
     name: Validation Run
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Checkout Carvel-YTT
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           repository: vmware-tanzu/carvel-ytt
           path: carvel-ytt.git
@@ -19,13 +19,13 @@ jobs:
 
       - name: Run Carvel-YTT
         id: carvel-ytt-template
-        uses: vmware-tanzu/carvel-setup-action@v1
+        uses: vmware-tanzu/carvel-setup-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           ytt -f carvel-ytt.git/examples/playground/getting-started/example-hello-world/config.yml > ytt-example.yaml
       - name: Validate Carvel-YTT
         id: carvel-ytt-validation
-        uses: kubevious/cli@main
+        uses: ./
         with:
           manifests: ytt-example.yaml
